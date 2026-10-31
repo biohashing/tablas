@@ -46,12 +46,15 @@ body{
   -webkit-tap-highlight-color:transparent;
 }
 button{font:inherit;color:inherit;cursor:pointer}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input{-webkit-user-select:text;user-select:text}
+svg,img{-webkit-user-drag:none}
 button:focus-visible,input:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
 
 /* ---- números "globo" ---- */
 .bub{font-family:var(--font-num);font-weight:800;line-height:1;white-space:nowrap}
 .bub .d{
-  display:inline-block;position:relative;color:var(--c);
+  display:inline-block;position:relative;color:var(--c);margin:0 .075em;
   -webkit-text-stroke:.14em #fff;paint-order:stroke fill;
   filter:drop-shadow(2px 0 0 var(--o)) drop-shadow(-2px 0 0 var(--o)) drop-shadow(0 2px 0 var(--o)) drop-shadow(0 -2px 0 var(--o)) drop-shadow(0 5px 0 rgba(30,58,95,.14));
 }
@@ -61,15 +64,20 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--ink);outline-of
   -webkit-background-clip:text;background-clip:text;
 }
 .bub .op{display:inline-block;color:var(--ink);opacity:.7;margin:0 .1em}
-.bub .sp{display:inline-block;width:.25em}
+.bub .sp{display:inline-block;width:.4em}
+.bub .w{display:inline-block;white-space:nowrap}
+.toast .bub{white-space:normal;line-height:1.3}
 
 /* ---- inicio ---- */
 .screen{height:100%;box-sizing:border-box}
 #home{overflow-y:auto;padding-block:20px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .home-in{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
-.hero{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.hero h1{margin:0;font-size:clamp(30px,8.5vw,68px)}
-.hero p{margin:6px 0 0;color:var(--muted);font-weight:700;max-width:46ch;font-size:16px}
+.hero{display:flex;flex-direction:column;gap:10px}
+.hero h1{margin:0;line-height:1.1;font-size:40px;white-space:nowrap}
+.hero h1 .tin{display:inline-block;margin-left:.05em}
+.hero h1 .d{margin:0 .025em}
+.hero-row{display:flex;align-items:center;justify-content:space-between;gap:10px 12px;flex-wrap:wrap}
+.hero p{margin:0;color:var(--muted);font-weight:700;max-width:46ch;font-size:16px}
 .pcard{background:var(--card);border-radius:28px;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 6px 0 var(--line),0 16px 30px rgba(30,58,95,.08);min-width:0}
 .lbl{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .name{font-family:var(--font-num);font-weight:800;font-size:28px;color:var(--ink);border:3px solid var(--line);border-radius:16px;padding:4px 14px;width:100%;box-sizing:border-box;background:#f6fbff}
@@ -93,6 +101,41 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--ink);outline-of
 .p-blue{--pc:var(--blue);--pd:#1a6eb8}
 .p-pink{--pc:var(--pink);--pd:#c42f76}
 .trophies{display:flex;flex-direction:column;gap:12px}
+.plrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pl{border:3px solid var(--line);background:#f6fbff;border-radius:999px;padding:5px 14px 3px;font-family:var(--font-num);font-weight:800;font-size:19px;color:var(--muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl.on{border-color:var(--pink);background:#fff;color:var(--ink);box-shadow:0 3px 0 #ffc4df}
+.pl.add{border-style:dashed;color:var(--blue)}
+.namerow{display:flex;gap:8px;align-items:center}
+.namerow .name{flex:1;min-width:0}
+.del{border:0;background:none;color:#c42f76;font-weight:800;font-size:14px;padding:6px;white-space:nowrap}
+.confirm{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:#fff0f6;border-radius:14px;padding:8px 12px;font-weight:800;font-size:15px}
+.confirm button{border:0;border-radius:10px;padding:6px 14px;font-weight:800}
+.confirm .yes{background:#c42f76;color:#fff}.confirm .no{background:#fff;box-shadow:0 2px 0 var(--line)}
+.tmed{display:grid;grid-template-columns:repeat(5,1fr);gap:10px 6px;text-align:center}
+.tmed.six{grid-template-columns:repeat(6,1fr)}
+.tm{display:flex;flex-direction:column;align-items:center;gap:1px;font-size:12px;font-weight:800;color:var(--muted);min-width:0}
+.tm svg{width:100%;max-width:62px;height:auto}
+.tm b{font-size:13px;color:var(--ink)}
+.tm.off b{color:var(--muted)}
+.tm{border:0;background:none;padding:4px 2px;border-radius:14px;font-family:inherit;font-size:12px;font-weight:800;color:var(--muted);cursor:pointer}
+.tm.sel{background:#eef7fe;box-shadow:inset 0 0 0 3px var(--blue)}
+.bar2{width:80%;height:8px;border-radius:4px;background:#e6eef5;overflow:hidden;margin-top:3px}
+.bar2 i{display:block;height:100%;border-radius:4px;background:var(--nc)}
+.tdet{background:#f6fbff;border-radius:18px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.tdet h3{margin:0;font-family:var(--font-num);font-size:22px;line-height:1.1}
+.tdet p{margin:0;font-weight:700;color:var(--muted);font-size:15px}
+.tdet p b{color:var(--ink)}
+.facts{display:flex;flex-wrap:wrap;gap:6px}
+.facts span{border-radius:10px;padding:4px 8px 2px;font-family:var(--font-num);font-weight:800;font-size:16px}
+.hint{font-size:14px;font-weight:700;color:var(--muted);margin:0}
+.map{display:grid;grid-template-columns:auto repeat(10,minmax(0,1fr));gap:3px;font-family:var(--font-num);font-weight:800}
+.map .h{font-size:13px;color:var(--muted);text-align:center;align-self:center;padding:0 4px 0 0}
+.map .c{aspect-ratio:1;border-radius:7px;display:grid;place-items:center;font-size:clamp(10px,2.6vw,14px);line-height:1}
+.l0{background:#edf3f8;color:#a9bccd}.l1{background:#ffb3bd;color:#8a1f33}.l2{background:#ffe08a;color:#7a5600}.l3{background:#b8ec9f;color:#245a17}.l4{background:#46c93a;color:#fff}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;font-weight:800;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:5px}
+.won .tm{width:72px;position:relative}
+.won .tm .new{position:absolute;top:-6px;right:-6px;background:var(--pink);color:#fff;border-radius:999px;font-size:11px;padding:2px 6px}
 .records{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px 16px;font-weight:800;color:var(--muted);font-size:15px}
 .records b{color:var(--ink)}
 .records .stars-s{display:inline-flex;vertical-align:middle;gap:2px}
@@ -246,14 +289,16 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--ink);outline-of
 <div id="home" class="screen">
   <div class="home-in">
     <div class="hero">
-      <div>
-        <h1 class="bub" id="title"></h1>
+      <h1 class="bub" id="title"></h1>
+      <div class="hero-row">
         <p>Tocá el globo con la respuesta antes de que se vuele.</p>
+        <div class="toggles"><button class="ibtn" id="mus1"></button><button class="ibtn" id="mute1"></button></div>
       </div>
-      <div class="toggles"><button class="ibtn" id="mus1"></button><button class="ibtn" id="mute1"></button></div>
     </div>
     <section class="pcard" id="setup"></section>
     <section class="pcard trophies" id="trophies"></section>
+    <section class="pcard trophies" id="achcard"></section>
+    <section class="pcard trophies" id="mapcard"></section>
   </div>
 </div>
 
@@ -300,42 +345,128 @@ const $=s=>document.querySelector(s);
 const PAL=[['#2ea8ff','#1a6eb8'],['#ff5da8','#c42f76'],['#46c93a','#258a1d'],['#ffc52e','#c98f00'],['#a45cff','#6e2cc2'],['#ff8a2e','#c45a0c']];
 const BAL=[{c:'#ff5da8',l:'#ffb8d9',d:'#c42f76'},{c:'#2ea8ff',l:'#a6dbff',d:'#1a6eb8'},{c:'#ffc52e',l:'#ffeaa6',d:'#c98f00'},{c:'#46c93a',l:'#b0f0a8',d:'#258a1d'},{c:'#a45cff',l:'#dcc2ff',d:'#6e2cc2'},{c:'#ff8a2e',l:'#ffcaa3',d:'#c45a0c'}];
 const SPEEDS=[{l:'Lento',t:10},{l:'Normal',t:7.5},{l:'Rápido',t:5.5}];
-const MEDALS=[
-  {id:'bronce',n:'Bronce',pts:100,c:'#e8a368',l:'#f7d0ad',d:'#9c5a26'},
-  {id:'plata',n:'Plata',pts:300,c:'#c9d4e0',l:'#f1f5f9',d:'#7f8fa3'},
-  {id:'oro',n:'Oro',pts:800,c:'#ffcf33',l:'#fff0a8',d:'#c98f00'},
-  {id:'diamante',n:'Diamante',pts:1600,c:'#6fdcff',l:'#d4f6ff',d:'#1a8fb8'},
-  {id:'leyenda',n:'Leyenda',pts:3000,c:'#c084ff',l:'#ecd9ff',d:'#6e2cc2'}];
+/* medalla de cada tabla: sube de rango a medida que la domina */
+const TMED=[null,
+  {id:'bronce',n:'Bronce',c:'#e8a368',l:'#f7d0ad',d:'#9c5a26'},
+  {id:'plata',n:'Plata',c:'#c9d4e0',l:'#f1f5f9',d:'#7f8fa3'},
+  {id:'oro',n:'Oro',c:'#ffcf33',l:'#fff0a8',d:'#c98f00'},
+  {id:'diamante',n:'Diamante',c:'#6fdcff',l:'#d4f6ff',d:'#1a8fb8'}];
+/* medallas del juego: se anuncian apenas se ganan durante la partida */
+const ACH=[
+  {id:'bronce',g:'pts',n:'Bronce',need:150,c:'#e8a368',l:'#f7d0ad',d:'#9c5a26',icon:'star'},
+  {id:'plata',g:'pts',n:'Plata',need:400,c:'#c9d4e0',l:'#f1f5f9',d:'#7f8fa3',icon:'star'},
+  {id:'oro',g:'pts',n:'Oro',need:1000,c:'#ffcf33',l:'#fff0a8',d:'#c98f00',icon:'star'},
+  {id:'diamante',g:'pts',n:'Diamante',need:2000,c:'#6fdcff',l:'#d4f6ff',d:'#1a8fb8',icon:'star'},
+  {id:'leyenda',g:'pts',n:'Leyenda',need:4000,c:'#c084ff',l:'#ecd9ff',d:'#6e2cc2',icon:'star'},
+  {id:'r5',g:'racha',n:'Racha de 5',need:5,c:'#ffa94d',l:'#ffe0c2',d:'#c45a0c',icon:'flame'},
+  {id:'r10',g:'racha',n:'Racha de 10',need:10,c:'#ff6b6b',l:'#ffd0d0',d:'#b8323a',icon:'flame'},
+  {id:'r20',g:'racha',n:'Racha de 20',need:20,c:'#ff5da8',l:'#ffc4df',d:'#a81f5e',icon:'flame'},
+  {id:'n3',g:'nivel',n:'Nivel 3',need:3,c:'#7be06e',l:'#d6f7d0',d:'#2e8f24',icon:'up'},
+  {id:'n5',g:'nivel',n:'Nivel 5',need:5,c:'#2ea8ff',l:'#a6dbff',d:'#1a6eb8',icon:'up'},
+  {id:'n8',g:'nivel',n:'Nivel 8',need:8,c:'#a45cff',l:'#dcc2ff',d:'#6e2cc2',icon:'up'}];
+const achReq=m=>m.g==='pts'?`${m.need} puntos`:m.g==='racha'?`${m.need} seguidas`:'en el Desafío';
+const achTitle=m=>m.g==='pts'?'Medalla de '+m.n:'¡'+m.n+'!';
+/* dificultad de cada tabla: una cuenta vale según el más fácil de sus dos números */
+const TIER={1:1,10:1,2:2,5:2,3:3,4:3,9:3,6:4,7:4,8:4};
+const factPts=(a,b)=>10*Math.min(TIER[a],TIER[b]);
+/* dominio de cada cuenta según las respuestas seguidas bien */
+const LVL_NAMES=['Sin jugar','Le cuesta','Aprendiendo','La sabe','Dominada'];
+const FW=[3,5,3,1.5,1];   // peso para que salga: lo que cuesta sale más
 const ROUND=10,LIVES=3,PER_LEVEL=5;
 
-function bub(s,start=0){let i=start;return [...s].map(ch=>{
-  if(ch===' ')return '<span class="sp"></span>';
+function bub(s,start=0){let i=start;return String(s).split(' ').map(w=>'<span class="w">'+[...w].map(ch=>{
   if(/[0-9A-Za-zÁÉÍÓÚáéíóúñÑ¡!+]/.test(ch)){const[c,o]=PAL[i++%PAL.length];return `<span class="d" data-c="${ch}" style="--c:${c};--o:${o}">${ch}</span>`}
-  return `<span class="op">${ch}</span>`}).join('')}
+  return `<span class="op">${ch}</span>`}).join('')+'</span>').join('<span class="sp"></span>')}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const STAR='M50 6l13 27 30 4-22 21 5 30-26-14-26 14 5-30L7 37l30-4z';
 const star=on=>`<svg viewBox="0 0 100 100"><path d="${STAR}" fill="${on?'#ffc52e':'#e3eef7'}" stroke="${on?'#c98f00':'#cfe0ee'}" stroke-width="6" stroke-linejoin="round"/>${on?'<path d="M38 30l6-12" stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".8"/>':''}</svg>`;
 const HEART='M50 88C20 65 6 48 6 30 6 16 17 6 30 6c9 0 16 5 20 12 4-7 11-12 20-12 13 0 24 10 24 24 0 18-14 35-44 58z';
 const heart=(on,cls='')=>`<svg viewBox="0 0 100 100" class="${cls}"><path d="${HEART}" fill="${on?'#ff4d7d':'#e3eef7'}" stroke="${on?'#c42f5c':'#cfe0ee'}" stroke-width="7" stroke-linejoin="round"/>${on?'<path d="M24 26c4-5 9-6 13-5" stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none" opacity=".8"/>':''}</svg>`;
-function medalSvg(m,on){
+function medalSvg(m,on,label){
   const c=on?m.c:'#e3eef7',l=on?m.l:'#f3f8fc',d=on?m.d:'#cfe0ee',r1=on?'#2ea8ff':'#dde8f1',r2=on?'#ff5da8':'#e6eef5',g='g'+m.id+(on?1:0)+Math.random().toString(36).slice(2,6);
   return `<svg viewBox="0 0 100 120"><defs><radialGradient id="${g}" cx="35%" cy="30%"><stop offset="0" stop-color="${l}"/><stop offset=".6" stop-color="${c}"/><stop offset="1" stop-color="${d}"/></radialGradient></defs>
   <path d="M30 0h18l-6 46H24z" fill="${r1}"/><path d="M52 0h18l6 46H58z" fill="${r2}"/>
   <circle cx="50" cy="76" r="38" fill="url(#${g})" stroke="${d}" stroke-width="5"/>
   <circle cx="50" cy="76" r="27" fill="none" stroke="${on?'rgba(255,255,255,.6)':'#fff'}" stroke-width="3"/>
-  <path transform="translate(29 55) scale(.42)" d="${STAR}" fill="${on?'#fff':'#e3eef7'}" opacity="${on?.9:1}"/>
+  ${label==null&&m.icon==='flame'?`<path d="M50 50C61 63 68 70 66 85C64 97 57 103 50 103C42 103 34 97 34 86C34 77 40 71 44 64C45 72 48 77 53 78C51 69 48 60 50 50Z" fill="${on?'#fff':'#e3eef7'}" opacity="${on?.92:1}"/>`:''}
+  ${label==null&&m.icon==='up'?`<path d="M34 92L50 76L66 92M34 74L50 58L66 74" stroke="${on?'#fff':'#e3eef7'}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="${on?.92:1}"/>`:''}
+  ${label==null&&m.icon&&m.icon!=='star'?'':label!=null?`<text x="50" y="79" text-anchor="middle" dominant-baseline="middle" font-family="Baloo 2,Arial Rounded MT Bold,sans-serif" font-weight="800" font-size="${String(label).length>1?32:38}" fill="${on?'#fff':'#c3d3e1'}" stroke="${on?d:'#fff'}" stroke-width="${on?6:2}" paint-order="stroke">${label}</text>`:`<path transform="translate(29 55) scale(.42)" d="${STAR}" fill="${on?'#fff':'#e3eef7'}" opacity="${on?.9:1}"/>`}
   ${on?'<path d="M30 60c4-8 10-12 17-13" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none" opacity=".75"/>':''}</svg>`;
 }
 
 /* ---- datos guardados ---- */
-let store={name:'',tables:[2,5,10],speed:0,best:0,record:0,medals:[],muted:false,music:true};
+const newPlayer=(o={})=>Object.assign({name:'',tables:[2,5,10],speed:0,best:0,bestLearn:0,record:0,facts:{},tmed:{},medals:[]},o);
+let store={players:[newPlayer()],cur:0,muted:false,music:true};
 try{
-  const s=JSON.parse(localStorage.getItem('tablas-globos-v3'))||JSON.parse(localStorage.getItem('tablas-globos-v2'));
-  if(s&&Array.isArray(s.tables))store=Object.assign(store,s);
+  const v4=JSON.parse(localStorage.getItem('tablas-globos-v4'));
+  if(v4&&Array.isArray(v4.players)&&v4.players.length){store=Object.assign(store,v4);store.players=store.players.map(p=>newPlayer(p))}
+  else{
+    const s=JSON.parse(localStorage.getItem('tablas-globos-v3'))||JSON.parse(localStorage.getItem('tablas-globos-v2'));
+    if(s&&Array.isArray(s.tables)){
+      store.players=[newPlayer({name:s.name||'',tables:s.tables,speed:s.speed||0,best:s.best||0,bestLearn:s.bestLearn||0,record:s.record||0,medals:Array.isArray(s.medals)?s.medals:[]})];
+      store.muted=!!s.muted;if(s.music!=null)store.music=s.music;
+    }
+  }
+  if(!(store.cur>=0&&store.cur<store.players.length))store.cur=0;
 }catch(e){}
-const save=()=>{try{localStorage.setItem('tablas-globos-v3',JSON.stringify(store))}catch(e){}};
-const nm=()=>store.name.trim();
+const save=()=>{try{localStorage.setItem('tablas-globos-v4',JSON.stringify(store))}catch(e){}};
+const P=()=>store.players[store.cur];
+const nm=()=>P().name.trim();
+
+/* ---- dominio de cuentas y medallas por tabla ---- */
+const fk=(a,b)=>a+'x'+b;
+function lvl(f){if(!f||!f.n)return 0;if(f.s===0)return 1;if(f.s<3)return 2;if(f.s<5)return 3;return 4}
+function tableRank(p,a){
+  let k3=0,k4=0,k8=0;
+  for(let b=1;b<=10;b++){const f=p.facts[fk(a,b)],l=lvl(f);if(l>=3)k3++;if(l>=4)k4++;if(f&&f.s>=8)k8++}
+  return {rank:k8===10?4:k4===10?3:k3===10?2:k3>=5?1:0,k3,k4,k8};
+}
+/* qué le falta a una tabla para la próxima medalla */
+function goalInfo(p,a){
+  const r=tableRank(p,a),cur=p.tmed[a]||0,facts=[];
+  for(let b=1;b<=10;b++){const f=p.facts[fk(a,b)];facts.push({b,f,l:lvl(f),s:f?f.s:0})}
+  if(cur>=4)return {cur,done:true};
+  const G2=[
+    {k:r.k3,goal:5,need:'saber 5 de las 10 cuentas',miss:x=>x.l<3},
+    {k:r.k3,goal:10,need:'saber las 10 cuentas',miss:x=>x.l<3},
+    {k:r.k4,goal:10,need:'dominar las 10 cuentas',miss:x=>x.l<4},
+    {k:r.k8,goal:10,need:'responder bien cada cuenta 8 veces seguidas',miss:x=>x.s<8}][cur];
+  return {cur,next:cur+1,k:Math.min(G2.k,G2.goal),goal:G2.goal,need:G2.need,missing:facts.filter(G2.miss)};
+}
+function nextGoal(p,a){
+  const r=tableRank(p,a),cur=Math.max(r.rank,p.tmed[a]||0);
+  if(cur>=4)return 'Completa';
+  if(cur===0)return `${Math.min(r.k3,5)}/5`;
+  if(cur===1)return `${r.k3}/10`;
+  if(cur===2)return `${r.k4}/10`;
+  return `${r.k8}/10`;
+}
+function weightedQs(p,n,unique){
+  const pool=[];p.tables.forEach(a=>{for(let b=1;b<=10;b++)pool.push({x:a,y:b,w:FW[lvl(p.facts[fk(a,b)])]})});
+  const out=[];let prev=null;
+  while(out.length<n){
+    let cand=pool.filter(f=>f!==prev&&!(unique&&out.includes(f)));
+    if(!cand.length)cand=pool.filter(f=>f!==prev);
+    if(!cand.length)cand=pool;
+    let r=Math.random()*cand.reduce((t,f)=>t+f.w,0),c=cand[cand.length-1];
+    for(const f of cand){r-=f.w;if(r<=0){c=f;break}}
+    out.push(c);prev=c;
+  }
+  return out.map(f=>({x:f.x,y:f.y}));
+}
+/* guarda la respuesta; si la tabla sube de medalla, la festeja. Devuelve true si hubo medalla nueva */
+function recordFact(q,ok){
+  const p=G.p,k=fk(q.x,q.y),f=p.facts[k]||(p.facts[k]={n:0,ok:0,s:0});
+  f.n++;if(ok){f.ok++;f.s++}else f.s=0;
+  const a=q.x,r=tableRank(p,a).rank;
+  if(r>(p.tmed[a]||0)){
+    p.tmed[a]=r;save();G.newT=G.newT.filter(x=>x[0]!==a);G.newT.push([a,r]);
+    toast(`${medalSvg(TMED[r],true,a)}<div class="bub">${bub('¡Medalla de '+TMED[r].n+'!')}</div><p>en la tabla del <b>${a}</b></p>`,()=>{sfx('medal');confetti(160,true)});
+    return true;
+  }
+  save();return false;
+}
 
 /* ---- sonido ---- */
 let ac=null;
@@ -416,10 +547,13 @@ function nextToast(){
 
 /* ---- inicio ---- */
 function renderHome(){
-  $('#title').innerHTML=bub('Tablas × globos');
-  const p=store,c=$('#setup');
-  c.innerHTML=`<label class="lbl" for="pname">Nombre</label>
-    <input id="pname" class="name" value="${esc(p.name)}" maxlength="14" autocomplete="off" placeholder="¿Cómo te llamás?">
+  $('#title').innerHTML='<span class="tin">'+bub('Tablas × globos')+'</span>';fitTitle();
+  const p=P(),c=$('#setup');
+  c.innerHTML=`<span class="lbl">Jugador</span>
+    <div class="plrow">${store.players.map((q,i)=>`<button class="pl ${i===store.cur?'on':''}" data-pl="${i}">${esc(q.name.trim()||'Jugador '+(i+1))}</button>`).join('')}<button class="pl add" data-new>+ Nuevo</button></div>
+    <label class="lbl" for="pname">Nombre</label>
+    <div class="namerow"><input id="pname" class="name" value="${esc(p.name)}" maxlength="14" autocomplete="off" placeholder="¿Cómo te llamás?">${store.players.length>1?'<button class="del" data-del>Borrar</button>':''}</div>
+    <div class="confirm" id="confirm" hidden>¿Borrar a ${esc(nm()||'este jugador')} y todo su progreso? <button class="yes" data-yes>Sí, borrar</button><button class="no" data-no>No</button></div>
     <div class="row-h"><span class="lbl">Tablas</span><button class="mini" data-all>${p.tables.length===10?'Ninguna':'Todas'}</button></div>
     <div class="chips">${Array.from({length:10},(_,k)=>k+1).map(n=>`<button class="chip ${p.tables.includes(n)?'on':''}" data-t="${n}" aria-pressed="${p.tables.includes(n)}" aria-label="Tabla del ${n}"><span class="bub">${bub(String(n),n)}</span></button>`).join('')}</div>
     <span class="lbl">Velocidad de los globos</span>
@@ -429,15 +563,54 @@ function renderHome(){
       <button class="play p-blue" data-mode="practice" ${p.tables.length?'':'disabled'}>Práctica<small>10 cuentas</small></button>
       <button class="play p-pink" data-mode="challenge" ${p.tables.length?'':'disabled'}>Desafío<small>3 vidas</small></button>
     </div>`;
-  c.querySelector('#pname').oninput=e=>{p.name=e.target.value;save()};
+  c.querySelector('#pname').oninput=e=>{p.name=e.target.value;save();const b=c.querySelector('.pl.on');if(b)b.textContent=p.name.trim()||'Jugador '+(store.cur+1);$('#tmTitle').textContent=medTitle()};
+  c.querySelectorAll('[data-pl]').forEach(b=>b.onclick=()=>{store.cur=+b.dataset.pl;selT=0;save();renderHome()});
+  c.querySelector('[data-new]').onclick=()=>{store.players.push(newPlayer());store.cur=store.players.length-1;save();renderHome();$('#pname').focus()};
+  const del=c.querySelector('[data-del]');if(del)del.onclick=()=>{$('#confirm').hidden=false};
+  c.querySelector('[data-no]').onclick=()=>{$('#confirm').hidden=true};
+  c.querySelector('[data-yes]').onclick=()=>{store.players.splice(store.cur,1);store.cur=0;save();renderHome()};
   c.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{const n=+b.dataset.t;p.tables=p.tables.includes(n)?p.tables.filter(x=>x!==n):[...p.tables,n].sort((a,b)=>a-b);save();renderHome()});
   c.querySelector('[data-all]').onclick=()=>{p.tables=p.tables.length===10?[]:[1,2,3,4,5,6,7,8,9,10];save();renderHome()};
   c.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{p.speed=+b.dataset.s;save();renderHome()});
   c.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>start(b.dataset.mode));
-  $('#trophies').innerHTML=`<span class="lbl">Medallas del Desafío</span>
-    <div class="medals">${MEDALS.map(m=>{const on=p.medals.includes(m.id);return `<div class="medal ${on?'':'off'}">${medalSvg(m,on)}<span>${m.n}</span><span>${m.pts} pts</span></div>`}).join('')}</div>
+  $('#trophies').innerHTML=`<span class="lbl" id="tmTitle">${medTitle()}</span>
+    <div class="tmed">${Array.from({length:10},(_,k)=>k+1).map(a=>{const r=p.tmed[a]||0,g=goalInfo(p,a);return `<button class="tm ${r?'':'off'} ${selT===a?'sel':''}" data-tm="${a}" aria-label="Tabla del ${a}">${medalSvg(TMED[r||1],!!r,a)}<b>${r?TMED[r].n:'—'}</b>${g.done?'<span>¡Completa!</span>':`<span class="bar2" style="--nc:${TMED[g.next].d}"><i style="width:${g.k/g.goal*100}%"></i></span><span style="color:${TMED[g.next].d}">${TMED[g.next].n}</span>`}</button>`}).join('')}</div>
+    <div id="tdet">${selT?tableDetail(p,selT):'<p class="hint">Tocá una medalla para ver qué te falta para la próxima.</p>'}</div>
     <div class="records"><span>Récord Desafío: <b>${p.record} puntos</b></span><span>Aprender: <span class="stars-s">${[1,2,3].map(n=>star(n<=(p.bestLearn||0))).join('')}</span></span><span>Práctica: <span class="stars-s">${[1,2,3].map(n=>star(n<=p.best)).join('')}</span></span></div>`;
+  $('#trophies').querySelectorAll('[data-tm]').forEach(b=>b.onclick=()=>{const a=+b.dataset.tm;selT=selT===a?0:a;
+    $('#trophies').querySelectorAll('[data-tm]').forEach(x=>x.classList.toggle('sel',+x.dataset.tm===selT));
+    $('#tdet').innerHTML=selT?tableDetail(P(),selT):'<p class="hint">Tocá una medalla para ver qué te falta para la próxima.</p>'});
+  $('#achcard').innerHTML=`<span class="lbl">Medallas del juego</span>
+    <div class="tmed">${ACH.filter(m=>m.g==='pts').map(achCell).join('')}</div>
+    <div class="tmed six">${ACH.filter(m=>m.g!=='pts').map(achCell).join('')}</div>
+    <p class="hint">Se ganan jugando: por puntos y niveles en el Desafío, y por rachas en Práctica y Desafío.</p>`;
+  let m='<div class="map"><span></span>'+Array.from({length:10},(_,k)=>`<span class="h">${k+1}</span>`).join('');
+  for(let a=1;a<=10;a++){m+=`<span class="h">${a} ×</span>`;for(let b=1;b<=10;b++){const f=p.facts[fk(a,b)],l=lvl(f);m+=`<span class="c l${l}" title="${a} × ${b} = ${a*b} · ${LVL_NAMES[l]}">${a*b}</span>`}}
+  m+='</div>';
+  $('#mapcard').innerHTML=`<span class="lbl">Mapa de las tablas</span>${m}<div class="legend">${LVL_NAMES.map((t,i)=>`<span><i class="l${i}"></i>${t}</span>`).join('')}</div>`;
 }
+let selT=0;
+function tableDetail(p,a){
+  const g=goalInfo(p,a),r=p.tmed[a]||0;
+  if(g.done)return `<div class="tdet"><h3 class="bub">${bub('Tabla del '+a)}</h3><p>¡Tiene la medalla de <b>Diamante</b>! Es la más alta. Tabla completa.</p></div>`;
+  const N=TMED[g.next].n;
+  return `<div class="tdet"><h3 class="bub">${bub('Tabla del '+a)}</h3>
+    <p>${r?`Tiene la medalla de <b>${TMED[r].n}</b>. `:''}Para la de <b>${N}</b> hay que ${g.need}. Va <b>${g.k} de ${g.goal}</b>.</p>
+    <p>${g.next===4?'Les falta llegar a 8 seguidas a estas:':'Le faltan estas:'}</p>
+    <div class="facts">${g.missing.map(x=>`<span class="l${x.l}">${a} × ${x.b}</span>`).join('')}</div>
+    <p style="font-size:13px">Una cuenta se <b>sabe</b> al responderla bien 3 veces seguidas, y queda <b>dominada</b> con 5 seguidas.</p></div>`;
+}
+function achCell(m){const on=P().medals.includes(m.id);return `<div class="tm ${on?'':'off'}">${medalSvg(m,on)}<b>${m.n}</b>${m.g==='pts'?`<span>${achReq(m)}</span>`:''}</div>`}
+/* el título ocupa justo el ancho de las tarjetas, ni más ni menos */
+function fitTitle(){
+  const h=$('#title'),t=h&&h.querySelector('.tin');if(!t||!h.clientWidth)return;
+  h.style.fontSize='100px';
+  // +10: el contorno blanco sobresale ~.05em a cada lado de la primera y la última letra
+  h.style.fontSize=Math.max(24,Math.min(120,100*h.clientWidth/(t.getBoundingClientRect().width+10)))+'px';
+}
+addEventListener('resize',()=>{if(!$('#home').hidden)fitTitle()});
+try{document.fonts.ready.then(()=>{if(!$('#home').hidden)fitTitle()})}catch(e){}
+function medTitle(){return 'Medallas'+(nm()?' de '+nm():'')}
 
 /* ---- juego ---- */
 let G=null,last=0;
@@ -452,10 +625,10 @@ function options(x,y){
   return shuffle([p,...pick]);
 }
 function start(mode){
-  const p=store;
-  G={mode,p,qs:mode==='learn'?learnPool(p.tables):mode==='practice'?pairPool(p.tables).slice(0,ROUND):pairPool(p.tables),k:0,score:0,pts:0,lives:LIVES,streak:0,correct:0,
-     level:1,lvlCorrect:0,levelPts:{1:0},
-     res:[],misses:[],won:[],newMedals:[],baseT:SPEEDS[p.speed].t,balloons:[],answered:true,paused:false};
+  const p=P();
+  G={mode,p,qs:mode==='learn'?learnPool(p.tables):mode==='practice'?weightedQs(p,ROUND,true):weightedQs(p,20,false),k:0,score:0,pts:0,lives:LIVES,streak:0,correct:0,
+     level:1,lvlCorrect:0,levelPts:{1:0},variety:1+.1*(p.tables.length-1),
+     res:[],misses:[],newT:[],won:[],newAch:[],baseT:SPEEDS[p.speed].t,balloons:[],answered:true,paused:false};
   toastQ.length=0;
   $('#home').hidden=true;$('#end').hidden=true;$('#toast').hidden=true;$('#game').hidden=false;
   $('#game').classList.toggle('ch',mode==='challenge');
@@ -477,7 +650,7 @@ function nextQ(){
   if(!G)return;
   if(G.mode!=='challenge'&&G.k>=ROUND)return finish();
   if(G.mode==='learn')return nextLearn();
-  if(G.mode==='challenge'&&G.k>=G.qs.length)G.qs.push(...pairPool(G.p.tables));
+  if(G.mode==='challenge'&&G.k>=G.qs.length)G.qs.push(...weightedQs(G.p,20,false));
   const area=$('#area');area.innerHTML='';
   const q=G.qs[G.k];G.cur=q;G.answered=false;G.paused=false;
   $('#q').innerHTML=bub(`${q.x} × ${q.y}`);$('#q').classList.remove('bounce');fitQ();
@@ -633,12 +806,13 @@ function skipCount(){
 }
 function finishLearnQ(){
   const q=G.cur,o=OBJS[q.o];G.answered=true;G.res[G.k]=G.clean;if(G.clean)G.score++;
+  const medal=recordFact(q,G.clean);
   renderSlots();renderBar();$('#pad').classList.add('wait');
   $('#fb').className='good';
   $('#fb').textContent=`¡Eso! ${q.x} ${q.x===1?'grupo':'grupos'} de ${q.y} son ${q.x*q.y} ${o.pl}`;
   const t=skipCount();
   setTimeout(()=>{if(G&&G.cur===q){confetti(G.clean?60:25);sfx('good')}},t);
-  setTimeout(()=>{if(G&&G.cur===q)advance()},t+1600);
+  setTimeout(()=>{if(G&&G.cur===q)advance()},t+1600+(medal?1700:0));
 }
 function showEq(){const q=G.cur;const el=$('#q');el.classList.remove('bounce');el.innerHTML=bub(`${q.x} × ${q.y} = ${q.x*q.y}`);fitQ();void el.offsetWidth;el.classList.add('bounce')}
 const GOOD=['¡Bien!','¡Genial!','¡Eso!','¡Bárbaro!','¡Muy bien!','¡Crack!'];
@@ -648,15 +822,15 @@ function tap(b){
   if(b.ok){
     pop(b);setTimeout(()=>sfx('good'),60);
     G.score++;G.correct++;G.res[G.k]=true;G.streak++;
+    let toasts=recordFact(G.cur,true)?1:0;
     G.balloons.forEach(o=>{if(o!==b)o.el.classList.add('fade')});
     let msg=G.streak>=3?`¡Racha de ${G.streak}!`:GOOD[Math.random()*GOOD.length|0];
-    let toasts=0;
     if(G.mode==='challenge'){
-      const add=10*G.level*mult();G.pts+=add;G.levelPts[G.level]+=add;msg=`+${add}  ${msg}`;
-      if(checkMedals())toasts++;
+      const add=Math.round(factPts(G.cur.x,G.cur.y)*G.variety*G.level*mult());G.pts+=add;G.levelPts[G.level]+=add;msg=`+${add}  ${msg}`;
       G.lvlCorrect++;
       if(G.lvlCorrect>=PER_LEVEL){G.level++;G.lvlCorrect=0;G.levelPts[G.level]=0;levelUp();toasts++}
     }
+    toasts+=checkAch();
     $('#fb').textContent=msg;$('#fb').className='good';
     renderBar();
     const pe=$('#pts');if(pe)pe.classList.add('bump');
@@ -677,23 +851,27 @@ function escaped(){
   setTimeout(advance,1900);
 }
 function miss(){
-  G.streak=0;G.res[G.k]=false;G.misses.push(G.cur);sfx('bad');showEq();
+  G.streak=0;G.res[G.k]=false;G.misses.push(G.cur);sfx('bad');showEq();recordFact(G.cur,false);
   if(G.mode==='challenge'){
     G.lives--;renderBar(G.lives);
     G.qs.splice(G.k+4,0,{...G.cur});   // la que falló vuelve a aparecer en un ratito
   }else renderBar();
 }
-function checkMedals(){
-  const m=MEDALS.find(m=>G.pts>=m.pts&&!G.won.includes(m.id));
-  if(!m)return false;
-  G.won.push(m.id);
-  if(!G.p.medals.includes(m.id)){G.p.medals.push(m.id);G.newMedals.push(m.id);save()}
-  toast(`${medalSvg(m,true)}<div>${bub('Medalla de '+m.n)}</div>`,()=>{sfx('medal');confetti(160,true)});
-  return true;
+function checkAch(){
+  let n=0;const p=G.p;
+  for(const m of ACH){
+    if(G.won.includes(m.id))continue;
+    const ok=m.g==='pts'?G.mode==='challenge'&&G.pts>=m.need:m.g==='racha'?G.mode!=='learn'&&G.streak>=m.need:G.mode==='challenge'&&G.level>=m.need;
+    if(!ok)continue;
+    G.won.push(m.id);n++;
+    if(!p.medals.includes(m.id)){p.medals.push(m.id);G.newAch.push(m.id);save()}
+    toast(`${medalSvg(m,true)}<div class="bub">${bub(achTitle(m))}</div><p>${G.newAch.includes(m.id)?'¡Medalla nueva!':achReq(m)}</p>`,()=>{sfx('medal');confetti(140,true)});
+  }
+  return n;
 }
 function levelUp(){
   const L=G.level;
-  toast(`<div class="tbig">${bub('Nivel '+L)}</div><p>Cada acierto vale <b>${10*L}</b> puntos</p><p>¡Los globos suben más rápido!</p>`,()=>{sfx('level');confetti(120,true)});
+  toast(`<div class="tbig bub">${bub('Nivel '+L)}</div><p>Los puntos se multiplican <b>×${L}</b></p><p>¡Los globos suben más rápido!</p>`,()=>{sfx('level');confetti(120,true)});
 }
 function advance(){
   if(!G)return;
@@ -702,13 +880,15 @@ function advance(){
 }
 
 function finish(){
-  musicStop();
+  musicStop();toastQ.length=0;$('#toast').hidden=true;
   const p=G.p,n=nm(),comma=n?`, ${n}`:'';
-  $('#lvls').innerHTML=G.mode==='challenge'?Object.entries(G.levelPts).filter(([l,v])=>v>0).map(([l,v])=>`<span>Nivel ${l}<b>${v}</b></span>`).join(''):'';
+  $('#lvls').innerHTML='';
   const seen=new Set(),uniq=G.misses.filter(q=>{const k=Math.min(q.x,q.y)+'x'+Math.max(q.x,q.y);if(seen.has(k))return false;seen.add(k);return true}).slice(0,8);
   $('#reviewWrap').hidden=!uniq.length;
   $('#review').innerHTML=uniq.map(q=>`<span class="item bub">${bub(`${q.x} × ${q.y} = ${q.x*q.y}`)}</span>`).join('');
-  $('#endRec').hidden=true;$('#won').innerHTML='';
+  $('#endRec').hidden=true;
+  $('#won').innerHTML=G.newT.map(([a,r])=>`<div class="tm">${medalSvg(TMED[r],true,a)}<b>${TMED[r].n}</b><span>Tabla del ${a}</span><span class="new">¡Nueva!</span></div>`).join('')
+    +G.won.map(id=>{const m=ACH.find(x=>x.id===id);return `<div class="tm">${medalSvg(m,true)}<b>${m.n}</b><span>${achReq(m)}</span>${G.newAch.includes(id)?'<span class="new">¡Nueva!</span>':''}</div>`}).join('');
   if(G.mode!=='challenge'){
     const s=G.score,st=s>=9?3:s>=7?2:s>=5?1:0,key=G.mode==='learn'?'bestLearn':'best';
     if(st>(p[key]||0)){p[key]=st;save()}
@@ -722,9 +902,8 @@ function finish(){
     $('#stars').hidden=true;
     $('#endTitle').innerHTML=bub(`${G.pts} puntos`);
     $('#endRec').hidden=!rec;
-    $('#endMsg').textContent=`Llegaste al nivel ${G.level} y acertaste ${G.correct} cuentas${comma}.${G.won.length?'':' La medalla de Bronce está a '+Math.max(0,MEDALS[0].pts-G.pts)+' puntos.'}`;
-    $('#won').innerHTML=G.won.map(id=>{const m=MEDALS.find(x=>x.id===id);return `<div class="medal">${medalSvg(m,true)}<span>${m.n}</span>${G.newMedals.includes(id)?'<span class="new">¡Nueva!</span>':''}</div>`}).join('');
-    if(rec||G.won.length){confetti(rec?220:120,true);sfx('end')}else sfx('over');
+    $('#endMsg').textContent=`Llegaste al nivel ${G.level} y acertaste ${G.correct} cuentas${comma}.`;
+    if(rec||G.newT.length||G.won.length){confetti(rec?220:120,true);sfx('end')}else sfx('over');
   }
   $('#end').hidden=false;
 }
