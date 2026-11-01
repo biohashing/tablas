@@ -570,8 +570,8 @@ function renderHome(){
   c.innerHTML=`<span class="lbl">Jugador</span>
     <div class="plrow">${store.players.map((q,i)=>`<button class="pl ${i===store.cur?'on':''}" data-pl="${i}">${esc(q.name.trim()||'Jugador '+(i+1))}</button>`).join('')}<button class="pl add" data-new>+ Nuevo</button></div>
     <div class="namerow" id="newRow" hidden><input id="newName" class="name" maxlength="14" autocomplete="off" placeholder="Nombre del nuevo jugador"><button class="okb" data-create disabled>Crear</button></div>
-    <div class="namerow" id="renRow" ${p.name.trim()?'hidden':''}><input id="pname" class="name" value="${esc(p.name)}" maxlength="14" autocomplete="off" placeholder="¿Cómo te llamás?"><button class="okb" data-ok>Listo</button></div>
-    <div class="placts" id="placts" ${p.name.trim()?'':'hidden'}><button class="mini" data-ren>Cambiar nombre</button>${store.players.length>1?'<button class="del" data-del>Borrar</button>':''}</div>
+    <label class="lbl" for="pname">Nombre</label>
+    <div class="namerow"><input id="pname" class="name" value="${esc(p.name)}" maxlength="14" autocomplete="off" placeholder="¿Cómo te llamás?">${store.players.length>1?'<button class="del" data-del>Borrar</button>':''}</div>
     <div class="confirm" id="confirm" hidden>¿Borrar a ${esc(nm()||'este jugador')} y todo su progreso? <button class="yes" data-yes>Sí, borrar</button><button class="no" data-no>No</button></div>
     <div class="row-h"><span class="lbl">Tablas</span><button class="mini" data-all>${p.tables.length===10?'Ninguna':'Todas'}</button></div>
     <div class="chips">${Array.from({length:10},(_,k)=>k+1).map(n=>`<button class="chip ${p.tables.includes(n)?'on':''}" data-t="${n}" aria-pressed="${p.tables.includes(n)}" aria-label="Tabla del ${n}"><span class="bub">${bub(String(n),n)}</span></button>`).join('')}</div>
@@ -585,13 +585,11 @@ function renderHome(){
   c.querySelector('#pname').oninput=e=>{p.name=e.target.value;save();const b=c.querySelector('.pl.on');if(b)b.textContent=p.name.trim()||'Jugador '+(store.cur+1);$('#tmTitle').textContent=medTitle()};
   c.querySelectorAll('[data-pl]').forEach(b=>b.onclick=()=>{store.cur=+b.dataset.pl;selT=0;save();renderHome()});
   const newName=c.querySelector('#newName'),createBtn=c.querySelector('[data-create]');
-  c.querySelector('[data-new]').onclick=()=>{$('#newRow').hidden=!$('#newRow').hidden;$('#renRow').hidden=!!p.name.trim();if(!$('#newRow').hidden)newName.focus()};
+  c.querySelector('[data-new]').onclick=()=>{$('#newRow').hidden=!$('#newRow').hidden;if(!$('#newRow').hidden)newName.focus()};
   newName.oninput=()=>{createBtn.disabled=!newName.value.trim()};
   const create=()=>{const n=newName.value.trim();if(!n)return;store.players.push(newPlayer({name:n}));store.cur=store.players.length-1;selT=0;save();renderHome()};
   createBtn.onclick=create;newName.onkeydown=e=>{if(e.key==='Enter')create()};
-  c.querySelector('[data-ok]').onclick=()=>{if(!p.name.trim())return $('#pname').focus();$('#renRow').hidden=true;$('#placts').hidden=false};
-  c.querySelector('#pname').onkeydown=e=>{if(e.key==='Enter')c.querySelector('[data-ok]').click()};
-  const ren=c.querySelector('[data-ren]');if(ren)ren.onclick=()=>{$('#renRow').hidden=false;$('#placts').hidden=true;$('#newRow').hidden=true;$('#pname').focus()};
+
   const del=c.querySelector('[data-del]');if(del)del.onclick=()=>{$('#confirm').hidden=false};
   c.querySelector('[data-no]').onclick=()=>{$('#confirm').hidden=true};
   c.querySelector('[data-yes]').onclick=()=>{store.players.splice(store.cur,1);store.cur=0;save();renderHome()};
