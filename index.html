@@ -287,6 +287,10 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--ink);outline-of
 .p-green{--pc:var(--green);--pd:#258a1d}
 .span2{grid-column:1/-1}
 @media (max-width:560px){.key{font-size:24px;border-radius:12px}#pad{gap:6px}}
+#adiag{position:fixed;inset:0;z-index:40;background:rgba(30,58,95,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+.adg{background:#fff;border-radius:20px;padding:16px;max-width:520px;width:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:10px}
+.adg pre{margin:0;white-space:pre-wrap;word-break:break-word;font-size:12px;background:#f6fbff;border-radius:12px;padding:10px;max-height:50vh;overflow:auto;-webkit-user-select:text;user-select:text}
+.adb{display:flex;gap:8px}.adb button{flex:1;border:0;border-radius:12px;padding:10px;font-weight:800;background:var(--blue);color:#fff}.adb button+button{background:#eef7fe;color:var(--ink)}
 #confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:30}
 @media (prefers-reduced-motion:reduce){.spark{display:none}.balloon.wrong .body{animation:none}#q.bounce,.end-card,.toast,.streak,.pts.bump{animation:none}}
 </style>
@@ -478,8 +482,20 @@ const SILENT_WAV='data:audio/wav;base64,UklGRvQHAABXQVZFZm10IBAAAAABAAEAQB8AAEAf
 let silentEl=null;
 /* crea el contexto de audio, o uno nuevo si iOS dejó el anterior "interrumpido" (pasa al abrir el
    teclado, al recibir una notificación o al volver de otra app) y ya no responde */
+let ctxStale=false;const audioLog=[];
+const alog=m=>{audioLog.push(new Date().toLocaleTimeString()+' '+m);if(audioLog.length>12)audioLog.shift()};
+/* iOS a veces deja el audio mudo aunque diga que está "running" (después de una llamada, otra app con
+   sonido, bloquear la pantalla...). La única cura confiable es crear un contexto nuevo dentro de un toque. */
+function freshCtx(why){
+  alog('contexto nuevo: '+why);
+  const wasMusic=!!MUS.timer;musicStop();
+  try{if(ac&&ac.state!=='closed')ac.close().catch(()=>{})}catch(e){}
+  ac=null;MUS.gain=null;ctxStale=false;
+  try{ac=new(window.AudioContext||window.webkitAudioContext)();ac.onstatechange=()=>alog('estado: '+(ac&&ac.state));ac.resume()}catch(e){alog('error: '+e.message)}
+  if(wasMusic&&inPlay())setTimeout(musicStart,0);
+}
 function ensureCtx(){
-  if(ac&&(ac.state==='closed'||ac.state==='interrupted')){
+  if(ac&&(ac.state==='closed'||ac.state==='interrupted')){alog('estaba '+ac.state);
     const wasMusic=!!MUS.timer;musicStop();try{if(ac.state!=='closed')ac.close().catch(()=>{})}catch(e){}
     ac=null;MUS.gain=null;
     if(wasMusic)setTimeout(()=>{if(inPlay())musicStart()},0);
@@ -491,6 +507,7 @@ function ensureCtx(){
 function unlockAudio(){
   try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
   try{
+    if(ctxStale)freshCtx('volvió a la página');
     ensureCtx();
     const b=ac.createBuffer(1,1,22050),src=ac.createBufferSource();src.buffer=b;src.connect(ac.destination);src.start(0);
   }catch(e){}
@@ -554,7 +571,8 @@ function musicStop(){
   try{if(MUS.gain){MUS.gain.gain.cancelScheduledValues(ac.currentTime);MUS.gain.gain.setValueAtTime(MUS.gain.gain.value,ac.currentTime);MUS.gain.gain.linearRampToValueAtTime(0,ac.currentTime+.15)}}catch(e){}
 }
 const inPlay=()=>G&&!$('#game').hidden&&$('#end').hidden;
-document.addEventListener('visibilitychange',()=>{if(document.hidden)musicStop();else if(inPlay())musicStart()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){musicStop();ctxStale=true}else if(inPlay())musicStart()});
+addEventListener('pageshow',e=>{if(e.persisted)ctxStale=true});
 
 const ICON_NOTE='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 18V6l11-2v12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="3" fill="currentColor"/><circle cx="17.5" cy="16" r="3" fill="currentColor"/></svg>';
 const ICON_SPK='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
@@ -563,8 +581,8 @@ function syncMute(){
   set($('#mus1'),store.music,ICON_NOTE,'Música',false);set($('#mus2'),store.music,ICON_NOTE,'Música',false);
   set($('#mute1'),!store.muted,ICON_SPK,'Efectos',false);set($('#mute2'),!store.muted,ICON_SPK,'Efectos',false);
 }
-[$('#mute1'),$('#mute2')].forEach(b=>b.onclick=()=>{store.muted=!store.muted;save();syncMute()});
-[$('#mus1'),$('#mus2')].forEach(b=>b.onclick=()=>{store.music=!store.music;save();syncMute();if(store.music&&inPlay())musicStart();else musicStop()});
+[$('#mute1'),$('#mute2')].forEach(b=>b.onclick=()=>{store.muted=!store.muted;save();syncMute();if(!store.muted){freshCtx('prendió efectos');sfx('good')}});
+[$('#mus1'),$('#mus2')].forEach(b=>b.onclick=()=>{store.music=!store.music;save();syncMute();if(store.music){freshCtx('prendió música');if(inPlay())musicStart()}else musicStop()});
 
 /* ---- carteles (medallas, niveles) en fila ---- */
 const toastQ=[];let toastBusy=false;
@@ -580,6 +598,7 @@ function nextToast(){
 /* ---- inicio ---- */
 function renderHome(){
   $('#title').innerHTML='<span class="tin">'+bub('Tablas × globos')+'</span>';fitTitle();
+  $('#title').onclick=()=>{const t=Date.now();titleTaps=titleTaps.filter(x=>t-x<2000);titleTaps.push(t);if(titleTaps.length>=5){titleTaps=[];audioPanel()}};
   const p=P(),c=$('#setup');
   c.innerHTML=`<span class="lbl">Jugador</span>
     <div class="plrow">${store.players.map((q,i)=>`<button class="pl ${i===store.cur?'on':''}" data-pl="${i}">${esc(q.name.trim()||'Jugador '+(i+1))}</button>`).join('')}<button class="pl add" data-new>+ Nuevo</button></div>
@@ -648,6 +667,19 @@ function fitTitle(){
 }
 addEventListener('resize',()=>{if(!$('#home').hidden)fitTitle()});
 try{document.fonts.ready.then(()=>{if(!$('#home').hidden)fitTitle()})}catch(e){}
+let titleTaps=[];
+function audioPanel(){
+  let d=$('#adiag');if(!d){d=document.createElement('div');d.id='adiag';document.body.append(d)}
+  const info=[
+    'Contexto: '+(ac?ac.state:'(ninguno)')+(ac?' · '+ac.sampleRate+' Hz':''),
+    'audioSession: '+(navigator.audioSession?navigator.audioSession.type:'no disponible'),
+    'Silencio HTML: '+(silentEl?(silentEl.paused?'pausado':'sonando'):'no usado'),
+    'Música: '+(store.music?'sí':'no')+' · Efectos: '+(store.muted?'no':'sí')+' · Sonando: '+(MUS.timer?'sí':'no'),
+    navigator.userAgent];
+  d.innerHTML=`<div class="adg"><b>Diagnóstico de sonido</b><pre>${esc(info.join('\n'))}\n\n${esc(audioLog.join('\n')||'(sin eventos)')}</pre><div class="adb"><button data-atest>Probar sonido</button><button data-x>Cerrar</button></div></div>`;
+  d.querySelector('[data-atest]').onclick=()=>{freshCtx('prueba');const was=store.muted;store.muted=false;sfx('end');store.muted=was;setTimeout(audioPanel,600)};
+  d.querySelector('[data-x]').onclick=()=>d.remove();
+}
 function medTitle(){return 'Medallas'+(nm()?' de '+nm():'')}
 
 /* ---- juego ---- */
@@ -671,7 +703,7 @@ function start(mode){
   $('#home').hidden=true;$('#end').hidden=true;$('#toast').hidden=true;$('#game').hidden=false;
   $('#game').classList.toggle('ch',mode==='challenge');
   $('#area').hidden=mode==='learn';$('#lrn').hidden=mode!=='learn';
-  renderBar();sfx('none');musicStop();musicStart();
+  freshCtx('nueva partida');renderBar();musicStart();
   requestAnimationFrame(()=>nextQ());
 }
 /* el nivel multiplica los puntos de a medio punto y se frena en ×6 (nivel 11);
