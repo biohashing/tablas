@@ -22,6 +22,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://tablas.satori.ar/og.png">
 <title>Tablas × globos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@600;700;800&display=swap">
 <style>
@@ -449,18 +450,13 @@ function nextGoal(p,a){
   if(cur===2)return `${r.k4}/10`;
   return `${r.k8}/10`;
 }
-function weightedQs(p,n,unique){
-  const pool=[];p.tables.forEach(a=>{for(let b=1;b<=10;b++)pool.push({x:a,y:b,w:FW[lvl(p.facts[fk(a,b)])]})});
-  const out=[];let prev=null;
-  while(out.length<n){
-    let cand=pool.filter(f=>f!==prev&&!(unique&&out.includes(f)));
-    if(!cand.length)cand=pool.filter(f=>f!==prev);
-    if(!cand.length)cand=pool;
-    let r=Math.random()*cand.reduce((t,f)=>t+f.w,0),c=cand[cand.length-1];
-    for(const f of cand){r-=f.w;if(r<=0){c=f;break}}
-    out.push(c);prev=c;
-  }
-  return out.map(f=>({x:f.x,y:f.y}));
+/* mazo de cuentas: en cada vuelta salen TODAS las cuentas de las tablas elegidas, una vez cada una.
+   Las que nunca salieron o cuestan van más adelante en el mazo; las dominadas, más atrás. */
+function weightedQs(p,n){
+  const bonus=[0,0,.15,.35,.6];
+  const deck=[];p.tables.forEach(a=>{for(let b=1;b<=10;b++)deck.push({x:a,y:b,k:Math.random()+bonus[lvl(p.facts[fk(a,b)])]})});
+  deck.sort((u,v)=>u.k-v.k);
+  return deck.slice(0,n||deck.length).map(f=>({x:f.x,y:f.y}));
 }
 /* guarda la respuesta; si la tabla sube de medalla, la festeja. Devuelve true si hubo medalla nueva */
 function recordFact(q,ok){
@@ -633,7 +629,7 @@ function options(x,y){
 }
 function start(mode){
   const p=P();
-  G={mode,p,qs:mode==='learn'?learnPool(p.tables):mode==='practice'?weightedQs(p,ROUND,true):weightedQs(p,20,false),k:0,score:0,pts:0,lives:LIVES,streak:0,correct:0,
+  G={mode,p,qs:mode==='learn'?learnPool(p.tables):mode==='practice'?weightedQs(p,ROUND):weightedQs(p),k:0,score:0,pts:0,lives:LIVES,streak:0,correct:0,
      level:1,lvlCorrect:0,levelPts:{1:0},variety:1+.1*(p.tables.length-1),
      res:[],misses:[],newT:[],won:[],newAch:[],baseT:SPEEDS[p.speed].t,balloons:[],answered:true,paused:false};
   toastQ.length=0;
@@ -657,7 +653,11 @@ function nextQ(){
   if(!G)return;
   if(G.mode!=='challenge'&&G.k>=ROUND)return finish();
   if(G.mode==='learn')return nextLearn();
-  if(G.mode==='challenge'&&G.k>=G.qs.length)G.qs.push(...weightedQs(G.p,20,false));
+  if(G.mode==='challenge'&&G.k>=G.qs.length){
+    const nq=weightedQs(G.p),lq=G.qs[G.qs.length-1];
+    if(nq.length>1&&lq&&nq[0].x===lq.x&&nq[0].y===lq.y)nq.push(nq.shift());   // que no se repita seguida al empezar otra vuelta
+    G.qs.push(...nq);
+  }
   const area=$('#area');area.innerHTML='';
   const q=G.qs[G.k];G.cur=q;G.answered=false;G.paused=false;
   $('#q').innerHTML=bub(`${q.x} × ${q.y}`);$('#q').classList.remove('bounce');fitQ();
