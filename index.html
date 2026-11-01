@@ -361,11 +361,11 @@ const TMED=[null,
   {id:'diamante',n:'Diamante',c:'#6fdcff',l:'#d4f6ff',d:'#1a8fb8'}];
 /* medallas del juego: se anuncian apenas se ganan durante la partida */
 const ACH=[
-  {id:'bronce',g:'pts',n:'Bronce',need:500,c:'#e8a368',l:'#f7d0ad',d:'#9c5a26',icon:'star'},
-  {id:'plata',g:'pts',n:'Plata',need:1200,c:'#c9d4e0',l:'#f1f5f9',d:'#7f8fa3',icon:'star'},
-  {id:'oro',g:'pts',n:'Oro',need:2500,c:'#ffcf33',l:'#fff0a8',d:'#c98f00',icon:'star'},
-  {id:'diamante',g:'pts',n:'Diamante',need:5000,c:'#6fdcff',l:'#d4f6ff',d:'#1a8fb8',icon:'star'},
-  {id:'leyenda',g:'pts',n:'Leyenda',need:10000,c:'#c084ff',l:'#ecd9ff',d:'#6e2cc2',icon:'star'},
+  {id:'bronce',g:'pts',n:'Bronce',need:1000,c:'#e8a368',l:'#f7d0ad',d:'#9c5a26',icon:'star'},
+  {id:'plata',g:'pts',n:'Plata',need:3000,c:'#c9d4e0',l:'#f1f5f9',d:'#7f8fa3',icon:'star'},
+  {id:'oro',g:'pts',n:'Oro',need:8000,c:'#ffcf33',l:'#fff0a8',d:'#c98f00',icon:'star'},
+  {id:'diamante',g:'pts',n:'Diamante',need:20000,c:'#6fdcff',l:'#d4f6ff',d:'#1a8fb8',icon:'star'},
+  {id:'leyenda',g:'pts',n:'Leyenda',need:50000,c:'#c084ff',l:'#ecd9ff',d:'#6e2cc2',icon:'star'},
   {id:'r5',g:'racha',n:'Racha de 5',need:5,c:'#ffa94d',l:'#ffe0c2',d:'#c45a0c',icon:'flame'},
   {id:'r10',g:'racha',n:'Racha de 10',need:10,c:'#ff6b6b',l:'#ffd0d0',d:'#b8323a',icon:'flame'},
   {id:'r20',g:'racha',n:'Racha de 20',need:20,c:'#ff5da8',l:'#ffc4df',d:'#a81f5e',icon:'flame'},
@@ -639,6 +639,11 @@ function start(mode){
   renderBar();sfx('none');musicStop();musicStart();
   requestAnimationFrame(()=>nextQ());
 }
+/* el nivel multiplica los puntos de a medio punto y se frena en ×6 (nivel 11);
+   la velocidad también tiene un tope, así el juego sigue siendo posible */
+const lvMult=L=>Math.min(6,1+(L-1)*.5);
+const fmtX=n=>String(n).replace('.',',');
+const speedT=L=>Math.max(2.8,G.baseT*Math.pow(.88,L-1));
 const mult=()=>G.streak>=6?3:G.streak>=3?2:1;
 function renderBar(lostIdx){
   const lvl=G.mode==='challenge'?`<span class="lvl">Nivel ${G.level} <span class="lp">${'●'.repeat(G.lvlCorrect)}${'○'.repeat(PER_LEVEL-G.lvlCorrect)}</span></span>`:'';
@@ -663,7 +668,7 @@ function nextQ(){
   $('#q').innerHTML=bub(`${q.x} × ${q.y}`);$('#q').classList.remove('bounce');fitQ();
   $('#fb').textContent='';$('#fb').className='';
   renderBar();
-  const T=G.mode==='challenge'?Math.max(2.8,G.baseT*Math.pow(.88,G.level-1)):G.baseT;
+  const T=G.mode==='challenge'?speedT(G.level):G.baseT;
   const W=area.clientWidth,H=area.clientHeight,bw=Math.min(W/4.4,118),bh=bw*1.18;
   G.v=(H+bh*2)/T;G.bh=bh;
   const cols=shuffle(BAL.slice());
@@ -833,7 +838,7 @@ function tap(b){
     G.balloons.forEach(o=>{if(o!==b)o.el.classList.add('fade')});
     let msg=G.streak>=3?`¡Racha de ${G.streak}!`:GOOD[Math.random()*GOOD.length|0];
     if(G.mode==='challenge'){
-      const add=Math.round(factPts(G.cur.x,G.cur.y)*G.variety*G.level*mult());G.pts+=add;G.levelPts[G.level]+=add;msg=`+${add}  ${msg}`;
+      const add=Math.round(factPts(G.cur.x,G.cur.y)*G.variety*lvMult(G.level)*mult());G.pts+=add;G.levelPts[G.level]+=add;msg=`+${add}  ${msg}`;
       G.lvlCorrect++;
       if(G.lvlCorrect>=PER_LEVEL){G.level++;G.lvlCorrect=0;G.levelPts[G.level]=0;levelUp();toasts++}
     }
@@ -878,7 +883,8 @@ function checkAch(){
 }
 function levelUp(){
   const L=G.level;
-  toast(`<div class="tbig bub">${bub('Nivel '+L)}</div><p>Los puntos se multiplican <b>×${L}</b></p><p>¡Los globos suben más rápido!</p>`,()=>{sfx('level');confetti(120,true)});
+  const up=lvMult(L)>lvMult(L-1),fast=speedT(L)<speedT(L-1);
+  toast(`<div class="tbig bub">${bub('Nivel '+L)}</div><p>${up?'Los puntos se multiplican':'Puntos al máximo:'} <b>×${fmtX(lvMult(L))}</b></p><p>${fast?'¡Los globos suben más rápido!':'Velocidad máxima'}</p>`,()=>{sfx('level');confetti(120,true)});
 }
 function advance(){
   if(!G)return;
