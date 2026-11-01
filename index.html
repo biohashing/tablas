@@ -297,7 +297,9 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--ink);outline-of
 .board{width:100%;max-width:720px;margin:0 auto;box-sizing:border-box;display:grid;grid-template-rows:repeat(5,auto);grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px 12px;background:rgba(255,255,255,.88);border-radius:22px;padding:12px;box-shadow:0 5px 0 var(--line)}
 .frow{display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;border-radius:14px;padding:2px 4px;transition:background .2s}
 .frow.lit{background:#fff3c4}
-.feq{font-size:clamp(17px,4.6vw,38px)}
+.feq{font-size:clamp(17px,4.6vw,38px);display:inline-flex;align-items:center;gap:.22em}
+.feq .op{margin:0}
+.feq .fb{display:inline-block;width:1.7em;text-align:right;white-space:nowrap}
 .fslot{flex:none;width:clamp(54px,15vw,110px);height:clamp(40px,10.5vw,72px);border:3px dashed #9fcdf0;border-radius:14px;background:#f2f9ff;display:grid;place-items:center;font-size:clamp(20px,5.4vw,42px);box-sizing:border-box;transition:transform .12s,background .12s}
 .fslot.over{background:#fff3c4;border-color:var(--yellow);transform:scale(1.08)}
 .fslot.full{border-style:solid;border-color:#b8ec9f;background:#f0fbea}
@@ -1067,7 +1069,7 @@ function buildFill(){
   vals=shuffle(vals);
   $('#q').innerHTML=bub('Tabla del '+a);fitQ();
   $('#fb').className='';$('#fb').textContent=FK_HELP[k];
-  $('#board').innerHTML=rows.map(b=>`<div class="frow" data-b="${b}"><span class="feq bub">${bub(a+' × '+b+' =')}</span><span class="fslot ${given.has(b)?'full given':''}" data-b="${b}">${given.has(b)?`<span class="bub">${bub(String(a*b),b)}</span>`:''}</span></div>`).join('');
+  $('#board').innerHTML=rows.map(b=>`<div class="frow" data-b="${b}"><span class="feq bub"><span class="fa">${bub(String(a))}</span><span class="op">×</span><span class="fb">${bub(String(b),1)}</span><span class="op">=</span></span><span class="fslot ${given.has(b)?'full given':''}" data-b="${b}">${given.has(b)?`<span class="bub">${bub(String(a*b),b)}</span>`:''}</span></div>`).join('');
   $('#tray').innerHTML=vals.map((v,i)=>`<button class="tile bub" data-v="${v}">${bub(String(v),i)}</button>`).join('');
   G.answered=false;selTile=null;renderBar();
 }
@@ -1111,7 +1113,7 @@ function dropTile(tile,slot){
   if(G.answered||!tile.isConnected)return;
   if(selTile){selTile.classList.remove('sel');selTile=null}
   if(v===a*b){
-    slot.classList.add('full','pop');slot.innerHTML=`<span class="bub">${bub(String(v),b)}</span>`;tile.remove();
+    slot.classList.remove('no','over');slot.classList.add('full','pop');slot.innerHTML=`<span class="bub">${bub(String(v),b)}</span>`;tile.remove();
     sfx('pop');setTimeout(()=>sfx('good'),60);F.done++;
     if(F.k>=3)recordFact({x:a,y:b},true);
     const msgs=['¡Bien!','¡Eso!','¡Genial!','¡Muy bien!'];$('#fb').className='good';$('#fb').textContent=msgs[Math.random()*msgs.length|0];
