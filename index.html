@@ -62,11 +62,7 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--ink);outline-of
   -webkit-text-stroke:.14em #fff;paint-order:stroke fill;
   filter:drop-shadow(2px 0 0 var(--o)) drop-shadow(-2px 0 0 var(--o)) drop-shadow(0 2px 0 var(--o)) drop-shadow(0 -2px 0 var(--o)) drop-shadow(0 5px 0 rgba(30,58,95,.14));
 }
-.bub .d::after{
-  content:attr(data-c);position:absolute;left:0;top:0;-webkit-text-stroke:0;color:transparent;pointer-events:none;
-  background:linear-gradient(160deg,rgba(255,255,255,0) 0 20%,rgba(255,255,255,.9) 21% 31%,rgba(255,255,255,0) 32%);
-  -webkit-background-clip:text;background-clip:text;
-}
+.bub .d::after{display:none}
 .bub .op{display:inline-block;color:var(--ink);opacity:.7;margin:0 .1em}
 .bub .sp{display:inline-block;width:.4em}
 .bub .w{display:inline-block;white-space:nowrap}
@@ -884,7 +880,7 @@ function checkAch(){
 function levelUp(){
   const L=G.level;
   const up=lvMult(L)>lvMult(L-1),fast=speedT(L)<speedT(L-1);
-  toast(`<div class="tbig bub">${bub('Nivel '+L)}</div><p>${up?'Los puntos se multiplican':'Puntos al máximo:'} <b>×${fmtX(lvMult(L))}</b></p><p>${fast?'¡Los globos suben más rápido!':'Velocidad máxima'}</p>`,()=>{sfx('level');confetti(120,true)});
+  toast(`<div class="tbig bub">${bub('Nivel '+L)}</div><p>${up?'Los puntos se multiplican':'Puntos al máximo:'} <b>×${fmtX(lvMult(L))}</b></p>${fast?'<p>¡Los globos suben más rápido!</p>':''}`,()=>{sfx('level');confetti(120,true)});
 }
 function advance(){
   if(!G)return;
