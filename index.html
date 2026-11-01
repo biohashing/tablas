@@ -476,22 +476,36 @@ let ac=null;
    para que no lo silencie el modo silencio del dispositivo */
 const SILENT_WAV='data:audio/wav;base64,UklGRvQHAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YdAHAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==';
 let silentEl=null;
+/* crea el contexto de audio, o uno nuevo si iOS dejó el anterior "interrumpido" (pasa al abrir el
+   teclado, al recibir una notificación o al volver de otra app) y ya no responde */
+function ensureCtx(){
+  if(ac&&(ac.state==='closed'||ac.state==='interrupted')){
+    const wasMusic=!!MUS.timer;musicStop();try{if(ac.state!=='closed')ac.close().catch(()=>{})}catch(e){}
+    ac=null;MUS.gain=null;
+    if(wasMusic)setTimeout(()=>{if(inPlay())musicStart()},0);
+  }
+  if(!ac){ac=new(window.AudioContext||window.webkitAudioContext)();MUS.gain=null}
+  if(ac.state!=='running')ac.resume();
+  return ac;
+}
 function unlockAudio(){
   try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}
   try{
-    ac=ac||new(window.AudioContext||window.webkitAudioContext)();
-    if(ac.state!=='running')ac.resume();
+    ensureCtx();
     const b=ac.createBuffer(1,1,22050),src=ac.createBufferSource();src.buffer=b;src.connect(ac.destination);src.start(0);
   }catch(e){}
-  if(!navigator.audioSession&&!silentEl&&/iP(hone|ad|od)|Macintosh/.test(navigator.userAgent)&&'ontouchend' in document){
-    try{silentEl=new Audio(SILENT_WAV);silentEl.setAttribute('playsinline','');silentEl.loop=true;silentEl.play().catch(()=>{silentEl=null})}catch(e){}
+  if(!navigator.audioSession&&/iP(hone|ad|od)|Macintosh/.test(navigator.userAgent)&&'ontouchend' in document){
+    try{
+      if(!silentEl){silentEl=new Audio(SILENT_WAV);silentEl.setAttribute('playsinline','');silentEl.loop=true}
+      if(silentEl.paused)silentEl.play().catch(()=>{});
+    }catch(e){}
   }
 }
 ['touchend','click','keydown'].forEach(ev=>document.addEventListener(ev,unlockAudio,{passive:true,capture:true}));
 function sfx(type,arg){
   if(store.muted)return;
   try{
-    ac=ac||new(window.AudioContext||window.webkitAudioContext)();ac.resume();
+    ensureCtx();
     const t=ac.currentTime;
     const tone=(f,st,d,typ='triangle',g=.18,f2)=>{const o=ac.createOscillator(),v=ac.createGain();o.type=typ;o.frequency.setValueAtTime(f,t+st);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+st+d);v.gain.setValueAtTime(g,t+st);v.gain.exponentialRampToValueAtTime(.001,t+st+d);o.connect(v).connect(ac.destination);o.start(t+st);o.stop(t+st+d+.02)};
     if(type==='pop'){const n=ac.sampleRate*.09,b=ac.createBuffer(1,n,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,3);const s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();f.type='bandpass';f.frequency.value=1400;g.gain.value=.9;s.buffer=b;s.connect(f).connect(g).connect(ac.destination);s.start()}
@@ -529,8 +543,8 @@ function sched(){
 function musicStart(){
   if(!store.music||MUS.timer)return;
   try{
-    ac=ac||new(window.AudioContext||window.webkitAudioContext)();ac.resume();
-    if(!MUS.gain){MUS.gain=ac.createGain();MUS.gain.connect(ac.destination)}
+    ensureCtx();
+    if(!MUS.gain||MUS.gain.context!==ac){MUS.gain=ac.createGain();MUS.gain.connect(ac.destination)}
     MUS.gain.gain.cancelScheduledValues(ac.currentTime);MUS.gain.gain.setValueAtTime(.7,ac.currentTime);
     MUS.next=ac.currentTime+.08;MUS.step=0;MUS.timer=setInterval(sched,25);sched();
   }catch(e){}
