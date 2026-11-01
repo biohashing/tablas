@@ -76,7 +76,11 @@ button:focus-visible,input:focus-visible{outline:4px solid var(--ink);outline-of
 .hero h1{margin:0;line-height:1.1;font-size:40px;white-space:nowrap}
 .hero h1 .tin{display:inline-block;margin-left:.05em}
 .hero h1 .d{margin:0 .025em}
-.hero-row{display:flex;align-items:center;justify-content:space-between;gap:10px 12px;flex-wrap:wrap}
+.hero-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hero-row p{min-width:0}
+.hero-row .toggles{flex:none;gap:6px}
+.hero-row .ibtn{width:44px;padding:0;border-radius:50%}
+.hero-row .ibtn.off::after{left:8px}
 .hero p{margin:0;color:var(--muted);font-weight:700;max-width:46ch;font-size:16px}
 .pcard{background:var(--card);border-radius:28px;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 6px 0 var(--line),0 16px 30px rgba(30,58,95,.08);min-width:0}
 .lbl{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
@@ -353,11 +357,11 @@ const TMED=[null,
   {id:'diamante',n:'Diamante',c:'#6fdcff',l:'#d4f6ff',d:'#1a8fb8'}];
 /* medallas del juego: se anuncian apenas se ganan durante la partida */
 const ACH=[
-  {id:'bronce',g:'pts',n:'Bronce',need:150,c:'#e8a368',l:'#f7d0ad',d:'#9c5a26',icon:'star'},
-  {id:'plata',g:'pts',n:'Plata',need:400,c:'#c9d4e0',l:'#f1f5f9',d:'#7f8fa3',icon:'star'},
-  {id:'oro',g:'pts',n:'Oro',need:1000,c:'#ffcf33',l:'#fff0a8',d:'#c98f00',icon:'star'},
-  {id:'diamante',g:'pts',n:'Diamante',need:2000,c:'#6fdcff',l:'#d4f6ff',d:'#1a8fb8',icon:'star'},
-  {id:'leyenda',g:'pts',n:'Leyenda',need:4000,c:'#c084ff',l:'#ecd9ff',d:'#6e2cc2',icon:'star'},
+  {id:'bronce',g:'pts',n:'Bronce',need:500,c:'#e8a368',l:'#f7d0ad',d:'#9c5a26',icon:'star'},
+  {id:'plata',g:'pts',n:'Plata',need:1200,c:'#c9d4e0',l:'#f1f5f9',d:'#7f8fa3',icon:'star'},
+  {id:'oro',g:'pts',n:'Oro',need:2500,c:'#ffcf33',l:'#fff0a8',d:'#c98f00',icon:'star'},
+  {id:'diamante',g:'pts',n:'Diamante',need:5000,c:'#6fdcff',l:'#d4f6ff',d:'#1a8fb8',icon:'star'},
+  {id:'leyenda',g:'pts',n:'Leyenda',need:10000,c:'#c084ff',l:'#ecd9ff',d:'#6e2cc2',icon:'star'},
   {id:'r5',g:'racha',n:'Racha de 5',need:5,c:'#ffa94d',l:'#ffe0c2',d:'#c45a0c',icon:'flame'},
   {id:'r10',g:'racha',n:'Racha de 10',need:10,c:'#ff6b6b',l:'#ffd0d0',d:'#b8323a',icon:'flame'},
   {id:'r20',g:'racha',n:'Racha de 20',need:20,c:'#ff5da8',l:'#ffc4df',d:'#a81f5e',icon:'flame'},
@@ -458,7 +462,7 @@ function weightedQs(p,n,unique){
 /* guarda la respuesta; si la tabla sube de medalla, la festeja. Devuelve true si hubo medalla nueva */
 function recordFact(q,ok){
   const p=G.p,k=fk(q.x,q.y),f=p.facts[k]||(p.facts[k]={n:0,ok:0,s:0});
-  f.n++;if(ok){f.ok++;f.s++}else f.s=0;
+  f.n++;if(ok){f.ok++;f.s++}else f.s-=Math.min(3,Math.ceil(f.s/2));   // un error resta la mitad de la racha, como mucho 3
   const a=q.x,r=tableRank(p,a).rank;
   if(r>(p.tmed[a]||0)){
     p.tmed[a]=r;save();G.newT=G.newT.filter(x=>x[0]!==a);G.newT.push([a,r]);
@@ -528,8 +532,8 @@ const ICON_NOTE='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="tr
 const ICON_SPK='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>';
 function syncMute(){
   const set=(el,on,icon,label,txt)=>{el.innerHTML=icon+(txt?`<span>${label}</span>`:'');el.classList.toggle('off',!on);el.setAttribute('aria-pressed',String(on));el.setAttribute('aria-label',label)};
-  set($('#mus1'),store.music,ICON_NOTE,'Música',true);set($('#mus2'),store.music,ICON_NOTE,'Música',false);
-  set($('#mute1'),!store.muted,ICON_SPK,'Efectos',true);set($('#mute2'),!store.muted,ICON_SPK,'Efectos',false);
+  set($('#mus1'),store.music,ICON_NOTE,'Música',false);set($('#mus2'),store.music,ICON_NOTE,'Música',false);
+  set($('#mute1'),!store.muted,ICON_SPK,'Efectos',false);set($('#mute2'),!store.muted,ICON_SPK,'Efectos',false);
 }
 [$('#mute1'),$('#mute2')].forEach(b=>b.onclick=()=>{store.muted=!store.muted;save();syncMute()});
 [$('#mus1'),$('#mus2')].forEach(b=>b.onclick=()=>{store.music=!store.music;save();syncMute();if(store.music&&inPlay())musicStart();else musicStop()});
